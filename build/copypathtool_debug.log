@@ -1,0 +1,321 @@
+[2026-07-02 17:12:49] --- App started (v1.1.2) --- args: ["C:\\Github\\menu right\\build\\CopyPathTool.exe", "--install"]
+[2026-07-02 17:12:49] install_and_register: Copy=true, CMD=true, PS=true, Rename=true, Claude=true
+[2026-07-02 17:12:49] install_and_register: current_exe="C:\\Github\\menu right\\build\\CopyPathTool.exe", dest_exe="C:\\ProgramData\\CopyPathTool\\CopyPathTool.exe"
+[2026-07-02 17:12:49] install_and_register: Creating installation directory...
+[2026-07-02 17:12:49] install_and_register: Copying current exe to ProgramData...
+[2026-07-02 17:12:49] get_registry_root: HKLM is NOT writeable, using HKCU (0x80000001).
+[2026-07-02 17:12:49] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath, Name: , Value: 複製路徑
+[2026-07-02 17:12:49] set_registry_string: Succeeded.
+[2026-07-02 17:12:49] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath, Name: Icon, Value: shell32.dll,-16763
+[2026-07-02 17:12:49] set_registry_string: Succeeded.
+[2026-07-02 17:12:49] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" "%1"
+[2026-07-02 17:12:49] set_registry_string: Succeeded.
+[2026-07-02 17:12:49] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\CopyPath, Name: , Value: 複製路徑
+[2026-07-02 17:12:49] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] --- App started (v1.1.2) --- args: [".\\build\\CopyPathTool.exe", "--install"]
+[2026-07-02 17:13:03] install_and_register: Copy=true, CMD=true, PS=true, Rename=true, Claude=true
+[2026-07-02 17:13:03] install_and_register: current_exe="C:\\Github\\menu right\\build\\CopyPathTool.exe", dest_exe="C:\\ProgramData\\CopyPathTool\\CopyPathTool.exe"
+[2026-07-02 17:13:03] install_and_register: Copying current exe to ProgramData...
+[2026-07-02 17:13:03] get_registry_root: HKLM is NOT writeable, using HKCU (0x80000001).
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath, Name: , Value: 複製路徑
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath, Name: Icon, Value: shell32.dll,-16763
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" "%1"
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\CopyPath, Name: , Value: 複製路徑
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\CopyPath, Name: Icon, Value: shell32.dll,-16763
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\CopyPath\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" "%1"
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\CopyPath, Name: , Value: 複製路徑
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\CopyPath, Name: Icon, Value: shell32.dll,-16763
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\CopyPath\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" "%V"
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenCMD, Name: , Value: 在此處開啟 CMD
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenCMD, Name: Icon, Value: cmd.exe
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenCMD\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --cmd "%1"
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenCMD, Name: , Value: 在此處開啟 CMD
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenCMD, Name: Icon, Value: cmd.exe
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenCMD\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --cmd "%1"
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenCMD, Name: , Value: 在此處開啟 CMD
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenCMD, Name: Icon, Value: cmd.exe
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenCMD\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --cmd "%V"
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenPS, Name: , Value: 在此處開啟 PowerShell
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenPS, Name: Icon, Value: powershell.exe
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenPS\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --ps "%1"
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenPS, Name: , Value: 在此處開啟 PowerShell
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenPS, Name: Icon, Value: powershell.exe
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenPS\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --ps "%1"
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenPS, Name: , Value: 在此處開啟 PowerShell
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenPS, Name: Icon, Value: powershell.exe
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenPS\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --ps "%V"
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\BatchRename, Name: , Value: 批次修改檔名
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\BatchRename, Name: Icon, Value: shell32.dll,-16815
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\BatchRename\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --rename "%1"
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\BatchRename, Name: , Value: 批次修改檔名
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\BatchRename, Name: Icon, Value: shell32.dll,-16815
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\BatchRename\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --rename "%1"
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenClaude, Name: , Value: 在此處開啟 Claude (YOLO)
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenClaude, Name: Icon, Value: cmd.exe
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenClaude\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --claude "%1"
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenClaude, Name: , Value: 在此處開啟 Claude (YOLO)
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenClaude, Name: Icon, Value: cmd.exe
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenClaude\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --claude "%1"
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenClaude, Name: , Value: 在此處開啟 Claude (YOLO)
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenClaude, Name: Icon, Value: cmd.exe
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:13:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenClaude\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --claude "%V"
+[2026-07-02 17:13:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:01] --- App started (v1.1.2) --- args: ["C:\\Github\\menu right\\build\\CopyPathTool.exe"]
+[2026-07-02 17:14:01] get_registry_root: HKLM is NOT writeable, using HKCU (0x80000001).
+[2026-07-02 17:14:01] check_key_exists: Software\Classes\*\shell\CopyPath found under HKCU.
+[2026-07-02 17:14:01] get_registry_root: HKLM is NOT writeable, using HKCU (0x80000001).
+[2026-07-02 17:14:01] check_key_exists: Software\Classes\Directory\shell\OpenCMD found under HKCU.
+[2026-07-02 17:14:01] get_registry_root: HKLM is NOT writeable, using HKCU (0x80000001).
+[2026-07-02 17:14:01] check_key_exists: Software\Classes\Directory\shell\OpenPS found under HKCU.
+[2026-07-02 17:14:01] get_registry_root: HKLM is NOT writeable, using HKCU (0x80000001).
+[2026-07-02 17:14:01] check_key_exists: Software\Classes\*\shell\BatchRename found under HKCU.
+[2026-07-02 17:14:01] get_registry_root: HKLM is NOT writeable, using HKCU (0x80000001).
+[2026-07-02 17:14:01] check_key_exists: Software\Classes\Directory\shell\OpenClaude found under HKCU.
+[2026-07-02 17:14:03] wnd_proc WM_COMMAND: id=105, code=0
+[2026-07-02 17:14:03] wnd_proc: Apply button clicked.
+[2026-07-02 17:14:03] apply_settings called: Copy=true, CMD=true, PS=true, Rename=true, Claude=true
+[2026-07-02 17:14:03] install_and_register: Copy=true, CMD=true, PS=true, Rename=true, Claude=true
+[2026-07-02 17:14:03] install_and_register: current_exe="C:\\Github\\menu right\\build\\CopyPathTool.exe", dest_exe="C:\\ProgramData\\CopyPathTool\\CopyPathTool.exe"
+[2026-07-02 17:14:03] install_and_register: Copying current exe to ProgramData...
+[2026-07-02 17:14:03] get_registry_root: HKLM is NOT writeable, using HKCU (0x80000001).
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath, Name: , Value: 複製路徑
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath, Name: Icon, Value: shell32.dll,-16763
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" "%1"
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\CopyPath, Name: , Value: 複製路徑
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\CopyPath, Name: Icon, Value: shell32.dll,-16763
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\CopyPath\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" "%1"
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\CopyPath, Name: , Value: 複製路徑
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\CopyPath, Name: Icon, Value: shell32.dll,-16763
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\CopyPath\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" "%V"
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenCMD, Name: , Value: 在此處開啟 CMD
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenCMD, Name: Icon, Value: cmd.exe
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenCMD\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --cmd "%1"
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenCMD, Name: , Value: 在此處開啟 CMD
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenCMD, Name: Icon, Value: cmd.exe
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenCMD\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --cmd "%1"
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenCMD, Name: , Value: 在此處開啟 CMD
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenCMD, Name: Icon, Value: cmd.exe
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenCMD\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --cmd "%V"
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenPS, Name: , Value: 在此處開啟 PowerShell
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenPS, Name: Icon, Value: powershell.exe
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenPS\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --ps "%1"
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenPS, Name: , Value: 在此處開啟 PowerShell
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenPS, Name: Icon, Value: powershell.exe
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenPS\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --ps "%1"
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenPS, Name: , Value: 在此處開啟 PowerShell
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenPS, Name: Icon, Value: powershell.exe
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenPS\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --ps "%V"
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\BatchRename, Name: , Value: 批次修改檔名
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\BatchRename, Name: Icon, Value: shell32.dll,-16815
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\BatchRename\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --rename "%1"
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\BatchRename, Name: , Value: 批次修改檔名
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\BatchRename, Name: Icon, Value: shell32.dll,-16815
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\BatchRename\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --rename "%1"
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenClaude, Name: , Value: 在此處開啟 Claude (YOLO)
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenClaude, Name: Icon, Value: cmd.exe
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenClaude\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --claude "%1"
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenClaude, Name: , Value: 在此處開啟 Claude (YOLO)
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenClaude, Name: Icon, Value: cmd.exe
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenClaude\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --claude "%1"
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenClaude, Name: , Value: 在此處開啟 Claude (YOLO)
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenClaude, Name: Icon, Value: cmd.exe
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenClaude\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --claude "%V"
+[2026-07-02 17:14:03] set_registry_string: Succeeded.
+[2026-07-02 17:14:03] apply_settings: install_and_register Succeeded.
+[2026-07-02 17:24:34] --- App started (v1.1.2) --- args: ["C:\\Github\\menu right\\build\\CopyPathTool.exe", "--install"]
+[2026-07-02 17:24:34] install_and_register: Copy=true, CMD=true, PS=true, Rename=true, Claude=true
+[2026-07-02 17:24:34] install_and_register: current_exe="C:\\Github\\menu right\\build\\CopyPathTool.exe", dest_exe="C:\\ProgramData\\CopyPathTool\\CopyPathTool.exe"
+[2026-07-02 17:24:34] install_and_register: Copying current exe to ProgramData...
+[2026-07-02 17:24:34] get_registry_root: HKLM is NOT writeable, using HKCU (0x80000001).
+[2026-07-02 17:24:34] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath, Name: , Value: 複製路徑
+[2026-07-02 17:24:34] set_registry_string: Succeeded.
+[2026-07-02 17:24:34] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath, Name: Icon, Value: shell32.dll,-16763
+[2026-07-02 17:24:34] set_registry_string: Succeeded.
+[2026-07-02 17:24:34] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" "%1"
+[2026-07-02 17:24:34] set_registry_string: Succeeded.
+[2026-07-02 17:24:34] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\CopyPath, Name: , Value: 複製路徑
+[2026-07-02 17:24:34] set_registry_string: Succeeded.
+[2026-07-02 17:24:34] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\CopyPath, Name: Icon, Value: shell32.dll,-16763
+[2026-07-02 17:27:24] --- App started (v1.1.2) --- args: ["C:\\Github\\menu right\\build\\CopyPathTool.exe", "--install"]
+[2026-07-02 17:27:24] install_and_register: Copy=true, CMD=true, PS=true, Rename=true, Claude=true
+[2026-07-02 17:27:24] install_and_register: current_exe="C:\\Github\\menu right\\build\\CopyPathTool.exe", dest_exe="C:\\ProgramData\\CopyPathTool\\CopyPathTool.exe"
+[2026-07-02 17:27:24] install_and_register: Copying current exe to ProgramData...
+[2026-07-02 17:27:45] --- App started (v1.1.2) --- args: ["C:\\Github\\menu right\\build\\CopyPathTool.exe", "--install"]
+[2026-07-02 17:27:45] install_and_register: Copy=true, CMD=true, PS=true, Rename=true, Claude=true
+[2026-07-02 17:27:45] install_and_register: current_exe="C:\\Github\\menu right\\build\\CopyPathTool.exe", dest_exe="C:\\ProgramData\\CopyPathTool\\CopyPathTool.exe"
+[2026-07-02 17:27:45] install_and_register: Copying current exe to ProgramData...
+[2026-07-02 17:28:09] --- App started (v1.1.2) --- args: ["C:\\Github\\menu right\\build\\CopyPathTool.exe", "--install"]
+[2026-07-02 17:28:09] install_and_register: Copy=true, CMD=true, PS=true, Rename=true, Claude=true
+[2026-07-02 17:28:09] install_and_register: current_exe="C:\\Github\\menu right\\build\\CopyPathTool.exe", dest_exe="C:\\ProgramData\\CopyPathTool\\CopyPathTool.exe"
+[2026-07-02 17:28:09] install_and_register: Copying current exe to ProgramData...
+[2026-07-02 17:28:29] --- App started (v1.1.2) --- args: [".\\build\\CopyPathTool.exe", "--install"]
+[2026-07-02 17:28:29] install_and_register: Copy=true, CMD=true, PS=true, Rename=true, Claude=true
+[2026-07-02 17:28:29] install_and_register: current_exe="C:\\Github\\menu right\\build\\CopyPathTool.exe", dest_exe="C:\\ProgramData\\CopyPathTool\\CopyPathTool.exe"
+[2026-07-02 17:28:29] install_and_register: Copying current exe to ProgramData...
+[2026-07-02 17:28:29] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath, Name: , Value: 複製路徑
+[2026-07-02 17:28:29] set_registry_string: Succeeded.
+[2026-07-02 17:28:29] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath, Name: Icon, Value: shell32.dll,-16763
+[2026-07-02 17:28:29] set_registry_string: Succeeded.
+[2026-07-02 17:28:29] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\CopyPath\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" "%1"
+[2026-07-02 17:28:29] set_registry_string: Succeeded.
+[2026-07-02 17:28:29] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\CopyPath, Name: , Value: 複製路徑
+[2026-07-02 17:28:29] set_registry_string: Succeeded.
+[2026-07-02 17:28:29] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\CopyPath, Name: Icon, Value: shell32.dll,-16763
+[2026-07-02 17:28:29] set_registry_string: Succeeded.
+[2026-07-02 17:28:29] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\CopyPath\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" "%1"
+[2026-07-02 17:28:29] set_registry_string: Succeeded.
+[2026-07-02 17:28:29] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\CopyPath, Name: , Value: 複製路徑
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\CopyPath, Name: Icon, Value: shell32.dll,-16763
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\CopyPath\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" "%V"
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenCMD, Name: , Value: 在此處開啟 CMD
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenCMD, Name: Icon, Value: cmd.exe
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenCMD\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --cmd "%1"
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenCMD, Name: , Value: 在此處開啟 CMD
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenCMD, Name: Icon, Value: cmd.exe
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenCMD\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --cmd "%1"
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenCMD, Name: , Value: 在此處開啟 CMD
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenCMD, Name: Icon, Value: cmd.exe
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenCMD\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --cmd "%V"
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenPS, Name: , Value: 在此處開啟 PowerShell
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenPS, Name: Icon, Value: powershell.exe
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenPS\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --ps "%1"
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenPS, Name: , Value: 在此處開啟 PowerShell
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenPS, Name: Icon, Value: powershell.exe
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenPS\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --ps "%1"
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenPS, Name: , Value: 在此處開啟 PowerShell
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenPS, Name: Icon, Value: powershell.exe
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenPS\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --ps "%V"
+[2026-07-02 17:28:30] set_registry_string: Succeeded.
+[2026-07-02 17:28:30] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\BatchRename, Name: , Value: 批次修改檔名
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 17:28:31] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\BatchRename, Name: Icon, Value: shell32.dll,-16815
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 17:28:31] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\BatchRename\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --rename "%1"
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 17:28:31] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\BatchRename, Name: , Value: 批次修改檔名
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 17:28:31] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\BatchRename, Name: Icon, Value: shell32.dll,-16815
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 17:28:31] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\BatchRename\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --rename "%1"
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 17:28:31] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenClaude, Name: , Value: 在此處開啟 Claude (YOLO)
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 17:28:31] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenClaude, Name: Icon, Value: cmd.exe
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 17:28:31] set_registry_string: Root: HKCU, Key: Software\Classes\*\shell\OpenClaude\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --claude "%1"
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 17:28:31] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenClaude, Name: , Value: 在此處開啟 Claude (YOLO)
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 17:28:31] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenClaude, Name: Icon, Value: cmd.exe
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 17:28:31] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\shell\OpenClaude\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --claude "%1"
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 17:28:31] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenClaude, Name: , Value: 在此處開啟 Claude (YOLO)
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 17:28:31] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenClaude, Name: Icon, Value: cmd.exe
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 17:28:31] set_registry_string: Root: HKCU, Key: Software\Classes\Directory\Background\shell\OpenClaude\command, Name: , Value: "C:\ProgramData\CopyPathTool\CopyPathTool.exe" --claude "%V"
+[2026-07-02 17:28:31] set_registry_string: Succeeded.
+[2026-07-02 20:02:28] --- App started (v1.1.2) --- args: ["C:\\Github\\menu right\\build\\CopyPathTool.exe", "--invalid-arg"]

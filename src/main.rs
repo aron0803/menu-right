@@ -5,7 +5,7 @@ const VERSION: &str = "1.1.2";
 use std::env;
 use std::ffi::OsStr;
 use std::os::windows::ffi::OsStrExt;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::ptr;
 use std::process::Command;
 use std::fs;
@@ -14,7 +14,6 @@ use std::fs;
 
 type HWND = *mut std::ffi::c_void;
 type HGLOBAL = *mut std::ffi::c_void;
-type HKEY = *mut std::ffi::c_void;
 
 #[repr(C)]
 struct WNDCLASSW {
@@ -109,41 +108,7 @@ extern "system" {
     fn GetStockObject(fn_object: i32) -> *mut std::ffi::c_void;
 }
 
-#[link(name = "advapi32")]
-extern "system" {
-    fn RegCreateKeyExW(
-        hKey: HKEY,
-        lpSubKey: *const u16,
-        Reserved: u32,
-        lpClass: *const u16,
-        dwOptions: u32,
-        samDesired: u32,
-        lpSecurityAttributes: *mut std::ffi::c_void,
-        phkResult: *mut HKEY,
-        lpdwDisposition: *mut u32,
-    ) -> i32;
 
-    fn RegOpenKeyExW(
-        hKey: HKEY,
-        lpSubKey: *const u16,
-        ulOptions: u32,
-        samDesired: u32,
-        phkResult: *mut HKEY,
-    ) -> i32;
-
-    fn RegSetValueExW(
-        hKey: HKEY,
-        lpValueName: *const u16,
-        Reserved: u32,
-        dwType: u32,
-        lpData: *const u8,
-        cbData: u32,
-    ) -> i32;
-
-    fn RegCloseKey(hKey: HKEY) -> i32;
-
-    fn RegDeleteKeyW(hKey: HKEY, lpSubKey: *const u16) -> i32;
-}
 
 // Win32 constants
 const COLOR_WINDOW: *mut std::ffi::c_void = 6 as *mut std::ffi::c_void;
@@ -164,10 +129,6 @@ const DEFAULT_GUI_FONT: i32 = 17;
 
 const GMEM_MOVEABLE: u32 = 0x0002;
 const CF_UNICODETEXT: u32 = 13;
-
-const KEY_WRITE: u32 = 0x20006;
-const KEY_READ: u32 = 0x20019;
-const REG_SZ: u32 = 1;
 
 // MessageBox constants
 const MB_OK: u32 = 0x00000000;
@@ -622,113 +583,98 @@ fn copy_to_clipboard(text: &str) -> bool {
 
 // Check if registry key exists
 // Check if registry key exists
-fn get_registry_root() -> HKEY {
-    let w_subkey = to_wstr("Software\\Classes");
-    let mut h_key: HKEY = ptr::null_mut();
-    unsafe {
-        let res = RegOpenKeyExW(0x80000002 as HKEY, w_subkey.as_ptr(), 0, KEY_WRITE, &mut h_key);
-        if res == 0 {
-            RegCloseKey(h_key);
-            log_debug("get_registry_root: HKLM is writeable, using HKLM (0x80000002).");
-            return 0x80000002 as HKEY; // HKEY_LOCAL_MACHINE
+fn is_admin() -> bool {
+    let output = Command::new("reg.exe")
+        .args(&["add", "HKLM\\Software\\CopyPathTool_CheckAdmin", "/v", "Test", "/t", "REG_SZ", "/d", "1", "/f"])
+        .output();
+    if let Ok(out) = output {
+        if out.status.success() {
+            let _ = Command::new("reg.exe")
+                .args(&["delete", "HKLM\\Software\\CopyPathTool_CheckAdmin", "/f"])
+                .output();
+            return true;
         }
     }
-    log_debug("get_registry_root: HKLM is NOT writeable, using HKCU (0x80000001).");
-    0x80000001 as HKEY // HKEY_CURRENT_USER
+    false
 }
 
 // Check if registry key exists
 fn check_key_exists(subkey: &str) -> bool {
-    let w_subkey = to_wstr(subkey);
-    let mut h_key: HKEY = ptr::null_mut();
-    let root = get_registry_root();
-    let root_str = if root == 0x80000002 as HKEY { "HKLM" } else { "HKCU" };
-    unsafe {
-        let res = RegOpenKeyExW(root, w_subkey.as_ptr(), 0, KEY_READ, &mut h_key);
-        if res == 0 {
-            RegCloseKey(h_key);
+    let root_str = if is_admin() { "HKLM" } else { "HKCU" };
+    
+    // Check primary root
+    let output = Command::new("reg.exe")
+        .args(&["query", &format!("{}\\{}", root_str, subkey)])
+        .output();
+    if let Ok(out) = output {
+        if out.status.success() {
             log_debug(&format!("check_key_exists: {} found under {}.", subkey, root_str));
-            true
-        } else {
-            log_debug(&format!("check_key_exists: {} NOT found under {} (res={}).", subkey, root_str, res));
-            if root == 0x80000002 as HKEY {
-                let mut h_key_hkcu: HKEY = ptr::null_mut();
-                let res_hkcu = RegOpenKeyExW(0x80000001 as HKEY, w_subkey.as_ptr(), 0, KEY_READ, &mut h_key_hkcu);
-                if res_hkcu == 0 {
-                    RegCloseKey(h_key_hkcu);
-                    log_debug(&format!("check_key_exists: {} found under HKCU (fallback).", subkey));
-                    return true;
-                }
-                log_debug(&format!("check_key_exists: {} NOT found under HKCU fallback either (res={}).", subkey, res_hkcu));
+            return true;
+        }
+    }
+    log_debug(&format!("check_key_exists: {} NOT found under {}.", subkey, root_str));
+    
+    // If primary is HKLM, fallback to HKCU
+    if root_str == "HKLM" {
+        let output_hkcu = Command::new("reg.exe")
+            .args(&["query", &format!("HKCU\\{}", subkey)])
+            .output();
+        if let Ok(out) = output_hkcu {
+            if out.status.success() {
+                log_debug(&format!("check_key_exists: {} found under HKCU (fallback).", subkey));
+                return true;
             }
+        }
+        log_debug(&format!("check_key_exists: {} NOT found under HKCU fallback either.", subkey));
+    }
+    
+    false
+}
+
+// Write a registry string value
+fn set_registry_string(root_str: &str, subkey: &str, value_name: &str, value: &str) -> bool {
+    log_debug(&format!("set_registry_string: Root: {}, Key: {}, Name: {}, Value: {}", root_str, subkey, value_name, value));
+    let mut args = vec!["add".to_string(), format!("{}\\{}", root_str, subkey)];
+    if !value_name.is_empty() {
+        args.push("/v".to_string());
+        args.push(value_name.to_string());
+    } else {
+        args.push("/ve".to_string());
+    }
+    args.push("/t".to_string());
+    args.push("REG_SZ".to_string());
+    args.push("/d".to_string());
+    args.push(value.to_string());
+    args.push("/f".to_string());
+
+    let output = Command::new("reg.exe")
+        .args(&args)
+        .output();
+
+    match output {
+        Ok(out) => {
+            if out.status.success() {
+                log_debug("set_registry_string: Succeeded.");
+                true
+            } else {
+                let err_msg = String::from_utf8_lossy(&out.stderr);
+                log_debug(&format!("set_registry_string FAILED: reg.exe returned exit code {}. Error: {}", out.status.code().unwrap_or(-1), err_msg));
+                false
+            }
+        }
+        Err(e) => {
+            log_debug(&format!("set_registry_string FAILED: failed to run reg.exe: {}", e));
             false
         }
     }
 }
 
-// Write a registry string value
-fn set_registry_string(root_key: HKEY, subkey: &str, value_name: &str, value: &str) -> bool {
-    let root_str = if root_key == 0x80000002 as HKEY { "HKLM" } else { "HKCU" };
-    log_debug(&format!("set_registry_string: Root: {}, Key: {}, Name: {}, Value: {}", root_str, subkey, value_name, value));
-    let w_subkey = to_wstr(subkey);
-    let w_value_name_holder;
-    let w_value_name = if value_name.is_empty() {
-        ptr::null()
-    } else {
-        w_value_name_holder = to_wstr(value_name);
-        w_value_name_holder.as_ptr()
-    };
-    let w_value = to_wstr(value);
-    
-    let mut h_key: HKEY = ptr::null_mut();
-    unsafe {
-        let res = RegCreateKeyExW(
-            root_key,
-            w_subkey.as_ptr(),
-            0,
-            ptr::null(),
-            0,
-            KEY_WRITE,
-            ptr::null_mut(),
-            &mut h_key,
-            ptr::null_mut(),
-        );
-        if res != 0 {
-            log_debug(&format!("set_registry_string FAILED: RegCreateKeyExW returned {}.", res));
-            return false;
-        }
-        
-        let val_bytes = w_value.len() * std::mem::size_of::<u16>();
-        let set_res = RegSetValueExW(
-            h_key,
-            w_value_name,
-            0,
-            REG_SZ,
-            w_value.as_ptr() as *const u8,
-            val_bytes as u32,
-        );
-        
-        RegCloseKey(h_key);
-        if set_res != 0 {
-            log_debug(&format!("set_registry_string FAILED: RegSetValueExW returned {}.", set_res));
-            return false;
-        }
-        log_debug("set_registry_string: Succeeded.");
-        true
-    }
-}
-
-// Delete registry key (first deleting the "command" subkey)
-fn delete_registry_key(root_key: HKEY, key_path: &str) {
-    let root_str = if root_key == 0x80000002 as HKEY { "HKLM" } else { "HKCU" };
+// Delete registry key
+fn delete_registry_key(root_str: &str, key_path: &str) {
     log_debug(&format!("delete_registry_key: Root: {}, Key: {}", root_str, key_path));
-    let w_command = to_wstr(&format!("{}\\command", key_path));
-    let w_key = to_wstr(key_path);
-    unsafe {
-        let res_cmd = RegDeleteKeyW(root_key, w_command.as_ptr());
-        let res_key = RegDeleteKeyW(root_key, w_key.as_ptr());
-        log_debug(&format!("delete_registry_key results: cmd_res={}, key_res={}", res_cmd, res_key));
-    }
+    let _ = Command::new("reg.exe")
+        .args(&["delete", &format!("{}\\{}", root_str, key_path), "/f"])
+        .output();
 }
 
 // --- Apply Settings (Install/Uninstall) ---
@@ -737,7 +683,6 @@ fn apply_settings(hwnd: HWND, enable_copy: bool, enable_cmd: bool, enable_ps: bo
     log_debug(&format!("apply_settings called: Copy={}, CMD={}, PS={}, Rename={}, Claude={}", enable_copy, enable_cmd, enable_ps, enable_rename, enable_claude));
     // If all are disabled, we treat it as an uninstallation.
     if !enable_copy && !enable_cmd && !enable_ps && !enable_rename && !enable_claude {
-        // Clean up registry and self-delete if running from ProgramData
         uninstall_all();
         show_message(hwnd, "設定已套用！所有右鍵選單功能已成功移除。", "成功", MB_OK | MB_ICONINFORMATION);
         unsafe { PostQuitMessage(0); }
@@ -778,10 +723,10 @@ fn install_and_register(enable_copy: bool, enable_cmd: bool, enable_ps: bool, en
     
     let exe_path_str = dest_exe.to_str().ok_or("執行檔路徑轉換失敗")?;
     
-    let root = get_registry_root();
+    let root_str = if is_admin() { "HKLM" } else { "HKCU" };
 
     let write_reg = |subkey: &str, value_name: &str, value: &str| -> Result<(), String> {
-        if !set_registry_string(root, subkey, value_name, value) {
+        if !set_registry_string(root_str, subkey, value_name, value) {
             return Err(format!("無法寫入登錄值: {}\\{}，請確認是否有權限或被防毒軟體阻擋。", subkey, value_name));
         }
         Ok(())
@@ -800,9 +745,9 @@ fn install_and_register(enable_copy: bool, enable_cmd: bool, enable_ps: bool, en
             write_reg(&format!("{}\\command", subkey), "", &command)?;
         }
     } else {
-        delete_registry_key(root, "Software\\Classes\\*\\shell\\CopyPath");
-        delete_registry_key(root, "Software\\Classes\\Directory\\shell\\CopyPath");
-        delete_registry_key(root, "Software\\Classes\\Directory\\Background\\shell\\CopyPath");
+        delete_registry_key(root_str, "Software\\Classes\\*\\shell\\CopyPath");
+        delete_registry_key(root_str, "Software\\Classes\\Directory\\shell\\CopyPath");
+        delete_registry_key(root_str, "Software\\Classes\\Directory\\Background\\shell\\CopyPath");
     }
 
     // 2. Open CMD Here feature
@@ -818,9 +763,9 @@ fn install_and_register(enable_copy: bool, enable_cmd: bool, enable_ps: bool, en
             write_reg(&format!("{}\\command", subkey), "", &command)?;
         }
     } else {
-        delete_registry_key(root, "Software\\Classes\\*\\shell\\OpenCMD");
-        delete_registry_key(root, "Software\\Classes\\Directory\\shell\\OpenCMD");
-        delete_registry_key(root, "Software\\Classes\\Directory\\Background\\shell\\OpenCMD");
+        delete_registry_key(root_str, "Software\\Classes\\*\\shell\\OpenCMD");
+        delete_registry_key(root_str, "Software\\Classes\\Directory\\shell\\OpenCMD");
+        delete_registry_key(root_str, "Software\\Classes\\Directory\\Background\\shell\\OpenCMD");
     }
 
     // 3. Open PowerShell Here feature
@@ -836,9 +781,9 @@ fn install_and_register(enable_copy: bool, enable_cmd: bool, enable_ps: bool, en
             write_reg(&format!("{}\\command", subkey), "", &command)?;
         }
     } else {
-        delete_registry_key(root, "Software\\Classes\\*\\shell\\OpenPS");
-        delete_registry_key(root, "Software\\Classes\\Directory\\shell\\OpenPS");
-        delete_registry_key(root, "Software\\Classes\\Directory\\Background\\shell\\OpenPS");
+        delete_registry_key(root_str, "Software\\Classes\\*\\shell\\OpenPS");
+        delete_registry_key(root_str, "Software\\Classes\\Directory\\shell\\OpenPS");
+        delete_registry_key(root_str, "Software\\Classes\\Directory\\Background\\shell\\OpenPS");
     }
 
     // 4. Batch Rename feature
@@ -853,8 +798,8 @@ fn install_and_register(enable_copy: bool, enable_cmd: bool, enable_ps: bool, en
             write_reg(&format!("{}\\command", subkey), "", &command)?;
         }
     } else {
-        delete_registry_key(root, "Software\\Classes\\*\\shell\\BatchRename");
-        delete_registry_key(root, "Software\\Classes\\Directory\\shell\\BatchRename");
+        delete_registry_key(root_str, "Software\\Classes\\*\\shell\\BatchRename");
+        delete_registry_key(root_str, "Software\\Classes\\Directory\\shell\\BatchRename");
     }
 
     // 5. Open Claude YOLO feature
@@ -870,9 +815,9 @@ fn install_and_register(enable_copy: bool, enable_cmd: bool, enable_ps: bool, en
             write_reg(&format!("{}\\command", subkey), "", &command)?;
         }
     } else {
-        delete_registry_key(root, "Software\\Classes\\*\\shell\\OpenClaude");
-        delete_registry_key(root, "Software\\Classes\\Directory\\shell\\OpenClaude");
-        delete_registry_key(root, "Software\\Classes\\Directory\\Background\\shell\\OpenClaude");
+        delete_registry_key(root_str, "Software\\Classes\\*\\shell\\OpenClaude");
+        delete_registry_key(root_str, "Software\\Classes\\Directory\\shell\\OpenClaude");
+        delete_registry_key(root_str, "Software\\Classes\\Directory\\Background\\shell\\OpenClaude");
     }
 
     Ok(())
@@ -897,8 +842,8 @@ fn uninstall_all() {
         "Software\\Classes\\Directory\\Background\\shell\\OpenClaude",
     ];
     for k in keys {
-        delete_registry_key(0x80000001 as HKEY, k);
-        delete_registry_key(0x80000002 as HKEY, k);
+        delete_registry_key("HKCU", k);
+        delete_registry_key("HKLM", k);
     }
     
     // Attempt deleting folder
@@ -1130,7 +1075,11 @@ fn main() {
         }
     } else if args.len() == 2 && args[1] == "--install" {
         // Silent install all features
-        let _ = install_and_register(true, true, true, true, true);
+        if let Err(e) = install_and_register(true, true, true, true, true) {
+            log_debug(&format!("Silent install failed: {}", e));
+            eprintln!("Silent install failed: {}", e);
+            std::process::exit(1);
+        }
     } else if args.len() == 2 && args[1] == "--uninstall" {
         // Silent uninstall
         uninstall_all();

@@ -1,10 +1,12 @@
 [package]
 name = "copy-path-tool"
-version = "1.0.0"
+version = "1.1.2"
 edition = "2021"
 
 [profile.release]
-opt-level = "z"      # Optimize for size
+opt-level = 3        # Standard optimization for performance/standard signature
 lto = true           # Enable Link-Time Optimization
 codegen-units = 1    # Reduce number of codegen units
-panic = "abort"      # Abort on panic to strip unwinding code
+
+[build-dependencies]
+winres = "0.1"
