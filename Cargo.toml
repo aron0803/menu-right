@@ -1,0 +1,10 @@
+[package]
+name = "copy-path-tool"
+version = "1.0.0"
+edition = "2021"
+
+[profile.release]
+opt-level = "z"      # Optimize for size
+lto = true           # Enable Link-Time Optimization
+codegen-units = 1    # Reduce number of codegen units
+panic = "abort"      # Abort on panic to strip unwinding code
