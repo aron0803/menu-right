@@ -1,6 +1,6 @@
 #![windows_subsystem = "windows"]
 
-const VERSION: &str = "1.1.2";
+const VERSION: &str = "1.2.0";
 
 use std::env;
 use std::ffi::OsStr;
@@ -8,6 +8,7 @@ use std::os::windows::ffi::OsStrExt;
 use std::path::Path;
 use std::ptr;
 use std::process::Command;
+use std::os::windows::process::CommandExt;
 use std::fs;
 
 // --- Win32 FFI Declarations ---
@@ -129,6 +130,7 @@ const DEFAULT_GUI_FONT: i32 = 17;
 
 const GMEM_MOVEABLE: u32 = 0x0002;
 const CF_UNICODETEXT: u32 = 13;
+const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 // MessageBox constants
 const MB_OK: u32 = 0x00000000;
@@ -586,11 +588,13 @@ fn copy_to_clipboard(text: &str) -> bool {
 fn is_admin() -> bool {
     let output = Command::new("reg.exe")
         .args(&["add", "HKLM\\Software\\CopyPathTool_CheckAdmin", "/v", "Test", "/t", "REG_SZ", "/d", "1", "/f"])
+        .creation_flags(CREATE_NO_WINDOW)
         .output();
     if let Ok(out) = output {
         if out.status.success() {
             let _ = Command::new("reg.exe")
                 .args(&["delete", "HKLM\\Software\\CopyPathTool_CheckAdmin", "/f"])
+                .creation_flags(CREATE_NO_WINDOW)
                 .output();
             return true;
         }
@@ -605,6 +609,7 @@ fn check_key_exists(subkey: &str) -> bool {
     // Check primary root
     let output = Command::new("reg.exe")
         .args(&["query", &format!("{}\\{}", root_str, subkey)])
+        .creation_flags(CREATE_NO_WINDOW)
         .output();
     if let Ok(out) = output {
         if out.status.success() {
@@ -618,6 +623,7 @@ fn check_key_exists(subkey: &str) -> bool {
     if root_str == "HKLM" {
         let output_hkcu = Command::new("reg.exe")
             .args(&["query", &format!("HKCU\\{}", subkey)])
+            .creation_flags(CREATE_NO_WINDOW)
             .output();
         if let Ok(out) = output_hkcu {
             if out.status.success() {
@@ -649,6 +655,7 @@ fn set_registry_string(root_str: &str, subkey: &str, value_name: &str, value: &s
 
     let output = Command::new("reg.exe")
         .args(&args)
+        .creation_flags(CREATE_NO_WINDOW)
         .output();
 
     match output {
@@ -674,6 +681,7 @@ fn delete_registry_key(root_str: &str, key_path: &str) {
     log_debug(&format!("delete_registry_key: Root: {}, Key: {}", root_str, key_path));
     let _ = Command::new("reg.exe")
         .args(&["delete", &format!("{}\\{}", root_str, key_path), "/f"])
+        .creation_flags(CREATE_NO_WINDOW)
         .output();
 }
 
@@ -860,6 +868,7 @@ fn uninstall_all() {
                 let _ = Command::new("cmd.exe")
                     .args(&["/c", &cmd_str])
                     .current_dir("C:\\")
+                    .creation_flags(CREATE_NO_WINDOW)
                     .spawn();
                 std::process::exit(0);
             } else {

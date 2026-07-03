@@ -1,5 +1,13 @@
 # 開發日誌 (Development Log)
 
+## [2026-07-03 12:55] 發布 v1.2.0 至 GitHub Tools 倉庫
+- **異動檔案**：更新 `logs/dev_log.md`
+- **異動原因**：將修復黑視窗問題後的 `CopyPathTool.exe` v1.2.0 打包為 `CopyPathTool.zip`，複製至本地克隆的 `Tools` 倉庫，更新 `tools.json` 版本號，並透過執行 `publish.ps1` 推送發布至 GitHub Releases 與 GitHub Pages。
+
+## [2026-07-03 11:35] 修復部署至其他電腦時不斷閃出黑色控制台視窗
+- **異動檔案**：更新 `src/main.rs`, `Cargo.toml`, `build.rs`, `CHANGELOG.md`, `logs/dev_log.md`
+- **異動原因**：排查發現程式內部使用 `Command::new("reg.exe")` 執行註冊表讀寫操作時，因未設定 `CREATE_NO_WINDOW` creation flag，導致每次呼叫都會產生一個可見的控制台視窗。在 `is_admin()`、`check_key_exists()`、`set_registry_string()`、`delete_registry_key()` 及 `uninstall_all()` 共 7 處背景子程序呼叫加入 `.creation_flags(CREATE_NO_WINDOW)` (0x08000000)，確保所有背景操作完全靜默。使用者主動開啟的 CMD/PowerShell/Claude 終端不受影響。版本升級至 v1.2.0。
+
 ## [2026-07-02 17:08] 將專案原始碼上傳至 GitHub 倉庫
 - **異動檔案**：新增 `.gitignore`, 更新 `logs/dev_log.md`
 - **異動原因**：應使用者要求，將本機 `menu right` 專案初始化為 Git 倉庫，並透過 GitHub CLI 建立並推送至遠端 `aron0803/menu-right` 倉庫，主分支設定為 `main`。
