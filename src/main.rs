@@ -1,6 +1,6 @@
 #![windows_subsystem = "windows"]
 
-const VERSION: &str = "1.3.0";
+const VERSION: &str = "1.3.1";
 
 use std::env;
 use std::ffi::OsStr;
@@ -105,6 +105,7 @@ extern "system" {
     fn WaitForSingleObject(hHandle: *mut std::ffi::c_void, dwMilliseconds: u32) -> u32;
     fn CloseHandle(hObject: *mut std::ffi::c_void) -> i32;
     fn GetLocalTime(lpSystemTime: *mut SYSTEMTIME);
+    fn GetLastError() -> u32;
 }
 
 #[link(name = "gdi32")]
@@ -139,6 +140,7 @@ const DEFAULT_GUI_FONT: i32 = 17;
 const GMEM_MOVEABLE: u32 = 0x0002;
 const CF_UNICODETEXT: u32 = 13;
 const CREATE_NO_WINDOW: u32 = 0x08000000;
+const ERROR_ALREADY_EXISTS: u32 = 183;
 
 // MessageBox constants
 const MB_OK: u32 = 0x00000000;
@@ -236,7 +238,6 @@ use std::io::{Write as _, BufRead as _};
 
 fn collect_paths(current_path: &str) -> Option<Vec<String>> {
     let temp_dir = env::temp_dir();
-    let lock_file = temp_dir.join("copypathtool_leader.lock");
     let paths_file = temp_dir.join("copypathtool_paths.txt");
     
     let mutex_name = to_wstr("Local\\CopyPathToolMutex");
@@ -246,18 +247,18 @@ fn collect_paths(current_path: &str) -> Option<Vec<String>> {
             return Some(vec![current_path.to_string()]);
         }
         
+        let is_leader = GetLastError() != ERROR_ALREADY_EXISTS;
+        
         WaitForSingleObject(h_mutex, 0xFFFFFFFF);
         
-        let is_leader = !lock_file.exists();
         if is_leader {
-            let _ = fs::File::create(&lock_file);
             if let Ok(mut f) = fs::File::create(&paths_file) {
                 let _ = writeln!(f, "{}", current_path);
             }
             
             ReleaseMutex(h_mutex);
             
-            std::thread::sleep(std::time::Duration::from_millis(150));
+            std::thread::sleep(std::time::Duration::from_millis(250));
             
             WaitForSingleObject(h_mutex, 0xFFFFFFFF);
             
@@ -274,7 +275,6 @@ fn collect_paths(current_path: &str) -> Option<Vec<String>> {
                 }
             }
             
-            let _ = fs::remove_file(&lock_file);
             let _ = fs::remove_file(&paths_file);
             
             ReleaseMutex(h_mutex);
@@ -283,7 +283,11 @@ fn collect_paths(current_path: &str) -> Option<Vec<String>> {
             paths.sort();
             Some(paths)
         } else {
-            if let Ok(mut f) = std::fs::OpenOptions::new().append(true).open(&paths_file) {
+            if let Ok(mut f) = std::fs::OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(&paths_file)
+            {
                 let _ = writeln!(f, "{}", current_path);
             }
             

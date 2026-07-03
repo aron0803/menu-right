@@ -1,5 +1,9 @@
 # 開發日誌 (Development Log)
 
+## [2026-07-03 13:25] 修復複製多個檔案路徑可能失效的問題
+- **異動檔案**：更新 `src/main.rs`, `Cargo.toml`, `build.rs`, `CHANGELOG.md`, `logs/dev_log.md`
+- **異動原因**：排查發現在多選檔案並複製路徑時，Windows 會並發啟動多個進程，原本邏輯藉由建立一個實體 `copypathtool_leader.lock` 檔案來判斷誰是 Leader，但在檔案鎖因為上一次異常未刪除殘留、或權限問題時，會造成所有進程均無法取得 Leader 身份而複製失效。此次重構改用 Windows Named Mutex 搭配 `GetLastError() == ERROR_ALREADY_EXISTS` 判斷，完全移除實體鎖檔案。並將 Leader sleep 等待其他進程寫入暫存檔的時間從 150ms 延長至 250ms 以降低慢速電腦上的遺漏率，最後對寫入時加入 `.create(true)` 以增加容錯率。
+
 ## [2026-07-03 12:55] 發布 v1.2.0 至 GitHub Tools 倉庫
 - **異動檔案**：更新 `logs/dev_log.md`
 - **異動原因**：將修復黑視窗問題後的 `CopyPathTool.exe` v1.2.0 打包為 `CopyPathTool.zip`，複製至本地克隆的 `Tools` 倉庫，更新 `tools.json` 版本號，並透過執行 `publish.ps1` 推送發布至 GitHub Releases 與 GitHub Pages。

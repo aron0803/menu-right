@@ -5,8 +5,8 @@ fn main() {
         res.set("ProductName", "CopyPathTool");
         res.set("OriginalFilename", "CopyPathTool.exe");
         res.set("CompanyName", "Ron Studio");
-        res.set("FileVersion", "1.3.0");
-        res.set("ProductVersion", "1.3.0");
+        res.set("FileVersion", "1.3.1");
+        res.set("ProductVersion", "1.3.1");
         res.compile().unwrap();
     }
 }
