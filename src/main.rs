@@ -1,6 +1,6 @@
 #![windows_subsystem = "windows"]
 
-const VERSION: &str = "1.2.0";
+const VERSION: &str = "1.3.0";
 
 use std::env;
 use std::ffi::OsStr;
@@ -10,6 +10,7 @@ use std::ptr;
 use std::process::Command;
 use std::os::windows::process::CommandExt;
 use std::fs;
+use std::sync::OnceLock;
 
 // --- Win32 FFI Declarations ---
 
@@ -70,6 +71,8 @@ extern "system" {
     fn TranslateMessage(lpMsg: *const MSG) -> i32;
     fn DispatchMessageW(lpMsg: *const MSG) -> isize;
     fn PostQuitMessage(nExitCode: i32);
+    fn PostMessageW(hWnd: HWND, Msg: u32, wParam: usize, lParam: isize) -> i32;
+    fn EnableWindow(hWnd: HWND, bEnable: i32) -> i32;
     fn SendMessageW(hWnd: HWND, Msg: u32, wParam: usize, lParam: isize) -> isize;
     fn GetModuleHandleW(lpModuleName: *const u16) -> *mut std::ffi::c_void;
     fn GetDlgItem(hDlg: HWND, nIDDlgItem: i32) -> HWND;
@@ -125,6 +128,11 @@ const WM_CREATE: u32 = 0x0001;
 const WM_DESTROY: u32 = 0x0002;
 const WM_COMMAND: u32 = 0x0111;
 const WM_SETFONT: u32 = 0x0030;
+
+// Custom messages for background thread communication
+const WM_APP: u32 = 0x8000;
+const WM_INIT_CHECK_DONE: u32 = WM_APP;      // wParam = bit flags for checkbox states
+const WM_APPLY_DONE: u32 = WM_APP + 1;       // wParam: 0=success, 1=uninstall_ok, 2=error
 
 const DEFAULT_GUI_FONT: i32 = 17;
 
@@ -583,24 +591,30 @@ fn copy_to_clipboard(text: &str) -> bool {
     }
 }
 
-// Check if registry key exists
-// Check if registry key exists
+// Cached admin check — only spawns reg.exe once per process lifetime
+static IS_ADMIN_CACHE: OnceLock<bool> = OnceLock::new();
+
 fn is_admin() -> bool {
-    let output = Command::new("reg.exe")
-        .args(&["add", "HKLM\\Software\\CopyPathTool_CheckAdmin", "/v", "Test", "/t", "REG_SZ", "/d", "1", "/f"])
-        .creation_flags(CREATE_NO_WINDOW)
-        .output();
-    if let Ok(out) = output {
-        if out.status.success() {
-            let _ = Command::new("reg.exe")
-                .args(&["delete", "HKLM\\Software\\CopyPathTool_CheckAdmin", "/f"])
-                .creation_flags(CREATE_NO_WINDOW)
-                .output();
-            return true;
+    *IS_ADMIN_CACHE.get_or_init(|| {
+        let output = Command::new("reg.exe")
+            .args(&["add", "HKLM\\Software\\CopyPathTool_CheckAdmin", "/v", "Test", "/t", "REG_SZ", "/d", "1", "/f"])
+            .creation_flags(CREATE_NO_WINDOW)
+            .output();
+        if let Ok(out) = output {
+            if out.status.success() {
+                let _ = Command::new("reg.exe")
+                    .args(&["delete", "HKLM\\Software\\CopyPathTool_CheckAdmin", "/f"])
+                    .creation_flags(CREATE_NO_WINDOW)
+                    .output();
+                return true;
+            }
         }
-    }
-    false
+        false
+    })
 }
+
+// Apply result storage for cross-thread communication
+static APPLY_RESULT_MSG: StdMutex<Option<(u32, String, String)>> = StdMutex::new(None);
 
 // Check if registry key exists
 fn check_key_exists(subkey: &str) -> bool {
@@ -683,31 +697,6 @@ fn delete_registry_key(root_str: &str, key_path: &str) {
         .args(&["delete", &format!("{}\\{}", root_str, key_path), "/f"])
         .creation_flags(CREATE_NO_WINDOW)
         .output();
-}
-
-// --- Apply Settings (Install/Uninstall) ---
-
-fn apply_settings(hwnd: HWND, enable_copy: bool, enable_cmd: bool, enable_ps: bool, enable_rename: bool, enable_claude: bool) {
-    log_debug(&format!("apply_settings called: Copy={}, CMD={}, PS={}, Rename={}, Claude={}", enable_copy, enable_cmd, enable_ps, enable_rename, enable_claude));
-    // If all are disabled, we treat it as an uninstallation.
-    if !enable_copy && !enable_cmd && !enable_ps && !enable_rename && !enable_claude {
-        uninstall_all();
-        show_message(hwnd, "設定已套用！所有右鍵選單功能已成功移除。", "成功", MB_OK | MB_ICONINFORMATION);
-        unsafe { PostQuitMessage(0); }
-        return;
-    }
-
-    // Otherwise, we install / copy exe
-    match install_and_register(enable_copy, enable_cmd, enable_ps, enable_rename, enable_claude) {
-        Ok(_) => {
-            log_debug("apply_settings: install_and_register Succeeded.");
-            show_message(hwnd, "設定已套用！右鍵選單功能已成功更新。\n程式已複製到本機 ProgramData 目錄儲存。", "成功", MB_OK | MB_ICONINFORMATION);
-        }
-        Err(e) => {
-            log_debug(&format!("apply_settings FAILED: {}", e));
-            show_message(hwnd, &format!("設定套用失敗：{}", e), "錯誤", MB_OK | MB_ICONERROR);
-        }
-    }
 }
 
 fn install_and_register(enable_copy: bool, enable_cmd: bool, enable_ps: bool, enable_rename: bool, enable_claude: bool) -> Result<(), String> {
@@ -888,13 +877,7 @@ fn uninstall_all() {
 unsafe extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: usize, lparam: isize) -> isize {
     match msg {
         WM_CREATE => {
-            // Determine default states based on existing registry keys
-            let has_copy = check_key_exists("Software\\Classes\\*\\shell\\CopyPath");
-            let has_cmd = check_key_exists("Software\\Classes\\Directory\\shell\\OpenCMD");
-            let has_ps = check_key_exists("Software\\Classes\\Directory\\shell\\OpenPS");
-            let has_rename = check_key_exists("Software\\Classes\\*\\shell\\BatchRename");
-            let has_claude = check_key_exists("Software\\Classes\\Directory\\shell\\OpenClaude");
-            
+            // Create all controls first (unchecked) — window appears instantly
             // Checkboxes
             let chk_copy = CreateWindowExW(
                 0,
@@ -978,13 +961,47 @@ unsafe extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: usize, lparam: 
             SendMessageW(chk_claude, WM_SETFONT, h_font as usize, 1);
             SendMessageW(btn_apply, WM_SETFONT, h_font as usize, 1);
 
-            // Set checked states based on current registry setup
+            // Spawn background thread to check registry states (non-blocking)
+            let hwnd_val = hwnd as usize;
+            std::thread::spawn(move || {
+                let has_copy = check_key_exists("Software\\Classes\\*\\shell\\CopyPath");
+                let has_cmd = check_key_exists("Software\\Classes\\Directory\\shell\\OpenCMD");
+                let has_ps = check_key_exists("Software\\Classes\\Directory\\shell\\OpenPS");
+                let has_rename = check_key_exists("Software\\Classes\\*\\shell\\BatchRename");
+                let has_claude = check_key_exists("Software\\Classes\\Directory\\shell\\OpenClaude");
+
+                // Pack results into bit flags
+                let flags: usize =
+                    (has_copy as usize)
+                    | ((has_cmd as usize) << 1)
+                    | ((has_ps as usize) << 2)
+                    | ((has_rename as usize) << 3)
+                    | ((has_claude as usize) << 4);
+
+                PostMessageW(hwnd_val as HWND, WM_INIT_CHECK_DONE, flags, 0);
+            });
+
+            0
+        }
+        WM_INIT_CHECK_DONE => {
+            // Background thread finished checking registry — update checkbox states
+            let has_copy  = (wparam & 1) != 0;
+            let has_cmd   = (wparam & 2) != 0;
+            let has_ps    = (wparam & 4) != 0;
+            let has_rename = (wparam & 8) != 0;
+            let has_claude = (wparam & 16) != 0;
+
+            let chk_copy = GetDlgItem(hwnd, ID_CHK_COPY);
+            let chk_cmd = GetDlgItem(hwnd, ID_CHK_CMD);
+            let chk_ps = GetDlgItem(hwnd, ID_CHK_PS);
+            let chk_rename = GetDlgItem(hwnd, ID_CHK_RENAME);
+            let chk_claude = GetDlgItem(hwnd, ID_CHK_CLAUDE);
+
             SendMessageW(chk_copy, BM_SETCHECK, if has_copy { BST_CHECKED } else { BST_UNCHECKED }, 0);
             SendMessageW(chk_cmd, BM_SETCHECK, if has_cmd { BST_CHECKED } else { BST_UNCHECKED }, 0);
             SendMessageW(chk_ps, BM_SETCHECK, if has_ps { BST_CHECKED } else { BST_UNCHECKED }, 0);
             SendMessageW(chk_rename, BM_SETCHECK, if has_rename { BST_CHECKED } else { BST_UNCHECKED }, 0);
             SendMessageW(chk_claude, BM_SETCHECK, if has_claude { BST_CHECKED } else { BST_UNCHECKED }, 0);
-            
             0
         }
         WM_COMMAND => {
@@ -998,6 +1015,8 @@ unsafe extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: usize, lparam: 
             
             if id == ID_BTN_APPLY {
                 log_debug("wnd_proc: Apply button clicked.");
+
+                // Read checkbox states on UI thread
                 let chk_copy = GetDlgItem(hwnd, ID_CHK_COPY);
                 let chk_cmd = GetDlgItem(hwnd, ID_CHK_CMD);
                 let chk_ps = GetDlgItem(hwnd, ID_CHK_PS);
@@ -1009,8 +1028,64 @@ unsafe extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: usize, lparam: 
                 let enable_ps = SendMessageW(chk_ps, BM_GETCHECK, 0, 0) == BST_CHECKED as isize;
                 let enable_rename = SendMessageW(chk_rename, BM_GETCHECK, 0, 0) == BST_CHECKED as isize;
                 let enable_claude = SendMessageW(chk_claude, BM_GETCHECK, 0, 0) == BST_CHECKED as isize;
-                
-                apply_settings(hwnd, enable_copy, enable_cmd, enable_ps, enable_rename, enable_claude);
+
+                // Disable apply button to prevent double-click
+                let btn_apply = GetDlgItem(hwnd, ID_BTN_APPLY);
+                EnableWindow(btn_apply, 0);
+
+                // Spawn background thread for registry operations
+                let hwnd_val = hwnd as usize;
+                std::thread::spawn(move || {
+                    log_debug(&format!("apply_settings called: Copy={}, CMD={}, PS={}, Rename={}, Claude={}", enable_copy, enable_cmd, enable_ps, enable_rename, enable_claude));
+
+                    if !enable_copy && !enable_cmd && !enable_ps && !enable_rename && !enable_claude {
+                        uninstall_all();
+                        if let Ok(mut guard) = APPLY_RESULT_MSG.lock() {
+                            *guard = Some((MB_OK | MB_ICONINFORMATION, "成功".to_string(), "設定已套用！所有右鍵選單功能已成功移除。".to_string()));
+                        }
+                        PostMessageW(hwnd_val as HWND, WM_APPLY_DONE, 1, 0); // 1 = uninstall, quit after
+                        return;
+                    }
+
+                    match install_and_register(enable_copy, enable_cmd, enable_ps, enable_rename, enable_claude) {
+                        Ok(_) => {
+                            log_debug("apply_settings: install_and_register Succeeded.");
+                            if let Ok(mut guard) = APPLY_RESULT_MSG.lock() {
+                                *guard = Some((MB_OK | MB_ICONINFORMATION, "成功".to_string(), "設定已套用！右鍵選單功能已成功更新。\n程式已複製到本機 ProgramData 目錄儲存。".to_string()));
+                            }
+                            PostMessageW(hwnd_val as HWND, WM_APPLY_DONE, 0, 0);
+                        }
+                        Err(e) => {
+                            log_debug(&format!("apply_settings FAILED: {}", e));
+                            if let Ok(mut guard) = APPLY_RESULT_MSG.lock() {
+                                *guard = Some((MB_OK | MB_ICONERROR, "錯誤".to_string(), format!("設定套用失敗：{}", e)));
+                            }
+                            PostMessageW(hwnd_val as HWND, WM_APPLY_DONE, 2, 0);
+                        }
+                    }
+                });
+            }
+            0
+        }
+        WM_APPLY_DONE => {
+            // Background apply thread finished — show result on UI thread
+            let result = if let Ok(mut guard) = APPLY_RESULT_MSG.lock() {
+                guard.take()
+            } else {
+                None
+            };
+
+            if let Some((flags, caption, message)) = result {
+                show_message(hwnd, &message, &caption, flags);
+            }
+
+            if wparam == 1 {
+                // Uninstall completed — quit
+                PostQuitMessage(0);
+            } else {
+                // Re-enable apply button
+                let btn_apply = GetDlgItem(hwnd, ID_BTN_APPLY);
+                EnableWindow(btn_apply, 1);
             }
             0
         }
