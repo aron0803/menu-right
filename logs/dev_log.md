@@ -1,5 +1,9 @@
 # 開發日誌 (Development Log)
 
+## [2026-07-03 13:40] 同步化設定套用流程與極簡化複製路徑功能
+- **異動檔案**：更新 `src/main.rs`, `Cargo.toml`, `build.rs`, `CHANGELOG.md`, `logs/dev_log.md`
+- **異動原因**：排查發現點擊「套用設定」後按鈕變灰且無任何彈窗提醒的 Bug，原因為原先設計的背景執行緒在寫入註冊表或檔案複製時發生 Panic 或被防毒軟體掛起/終止，導致無法發送 `WM_APPLY_DONE` 給 UI 執行緒。此次重構直接將套用流程移回主 UI 執行緒中同步執行，徹底消除因執行緒通訊失敗造成的靜默卡死，保證彈窗通知。另外依據使用者建議，拿掉複製多路徑時的 Named Mutex、暫存檔讀寫與 Sleep 延遲，簡化為單一路徑直接複製至剪貼簿，換取最高的系統穩定性與極簡的程式碼（註：批次重新命名仍保留 `collect_paths` 機制以確保正常多選批次重新命名）。
+
 ## [2026-07-03 13:25] 修復複製多個檔案路徑可能失效的問題
 - **異動檔案**：更新 `src/main.rs`, `Cargo.toml`, `build.rs`, `CHANGELOG.md`, `logs/dev_log.md`
 - **異動原因**：排查發現在多選檔案並複製路徑時，Windows 會並發啟動多個進程，原本邏輯藉由建立一個實體 `copypathtool_leader.lock` 檔案來判斷誰是 Leader，但在檔案鎖因為上一次異常未刪除殘留、或權限問題時，會造成所有進程均無法取得 Leader 身份而複製失效。此次重構改用 Windows Named Mutex 搭配 `GetLastError() == ERROR_ALREADY_EXISTS` 判斷，完全移除實體鎖檔案。並將 Leader sleep 等待其他進程寫入暫存檔的時間從 150ms 延長至 250ms 以降低慢速電腦上的遺漏率，最後對寫入時加入 `.create(true)` 以增加容錯率。

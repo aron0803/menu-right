@@ -1,6 +1,6 @@
 #![windows_subsystem = "windows"]
 
-const VERSION: &str = "1.3.1";
+const VERSION: &str = "1.4.0";
 
 use std::env;
 use std::ffi::OsStr;
@@ -133,7 +133,6 @@ const WM_SETFONT: u32 = 0x0030;
 // Custom messages for background thread communication
 const WM_APP: u32 = 0x8000;
 const WM_INIT_CHECK_DONE: u32 = WM_APP;      // wParam = bit flags for checkbox states
-const WM_APPLY_DONE: u32 = WM_APP + 1;       // wParam: 0=success, 1=uninstall_ok, 2=error
 
 const DEFAULT_GUI_FONT: i32 = 17;
 
@@ -563,6 +562,7 @@ fn show_message(hwnd: HWND, text: &str, caption: &str, utype: u32) {
 }
 
 fn copy_to_clipboard(text: &str) -> bool {
+    log_debug(&format!("copy_to_clipboard: text length = {}", text.len()));
     let os_str = OsStr::new(text);
     let mut utf16: Vec<u16> = os_str.encode_wide().collect();
     utf16.push(0);
@@ -572,11 +572,13 @@ fn copy_to_clipboard(text: &str) -> bool {
     unsafe {
         let h_mem = GlobalAlloc(GMEM_MOVEABLE, byte_len);
         if h_mem.is_null() {
+            log_debug("copy_to_clipboard: GlobalAlloc failed.");
             return false;
         }
 
         let ptr = GlobalLock(h_mem);
         if ptr.is_null() {
+            log_debug("copy_to_clipboard: GlobalLock failed.");
             return false;
         }
 
@@ -584,6 +586,7 @@ fn copy_to_clipboard(text: &str) -> bool {
         GlobalUnlock(h_mem);
 
         if OpenClipboard(ptr::null_mut()) == 0 {
+            log_debug(&format!("copy_to_clipboard: OpenClipboard failed. Error: {}", GetLastError()));
             return false;
         }
 
@@ -591,7 +594,9 @@ fn copy_to_clipboard(text: &str) -> bool {
         let res = SetClipboardData(CF_UNICODETEXT, h_mem);
         CloseClipboard();
 
-        !res.is_null()
+        let success = !res.is_null();
+        log_debug(&format!("copy_to_clipboard: SetClipboardData success = {}", success));
+        success
     }
 }
 
@@ -617,8 +622,6 @@ fn is_admin() -> bool {
     })
 }
 
-// Apply result storage for cross-thread communication
-static APPLY_RESULT_MSG: StdMutex<Option<(u32, String, String)>> = StdMutex::new(None);
 
 // Check if registry key exists
 fn check_key_exists(subkey: &str) -> bool {
@@ -1033,63 +1036,24 @@ unsafe extern "system" fn wnd_proc(hwnd: HWND, msg: u32, wparam: usize, lparam: 
                 let enable_rename = SendMessageW(chk_rename, BM_GETCHECK, 0, 0) == BST_CHECKED as isize;
                 let enable_claude = SendMessageW(chk_claude, BM_GETCHECK, 0, 0) == BST_CHECKED as isize;
 
-                // Disable apply button to prevent double-click
-                let btn_apply = GetDlgItem(hwnd, ID_BTN_APPLY);
-                EnableWindow(btn_apply, 0);
+                log_debug(&format!("apply_settings called (sync): Copy={}, CMD={}, PS={}, Rename={}, Claude={}", enable_copy, enable_cmd, enable_ps, enable_rename, enable_claude));
 
-                // Spawn background thread for registry operations
-                let hwnd_val = hwnd as usize;
-                std::thread::spawn(move || {
-                    log_debug(&format!("apply_settings called: Copy={}, CMD={}, PS={}, Rename={}, Claude={}", enable_copy, enable_cmd, enable_ps, enable_rename, enable_claude));
-
-                    if !enable_copy && !enable_cmd && !enable_ps && !enable_rename && !enable_claude {
-                        uninstall_all();
-                        if let Ok(mut guard) = APPLY_RESULT_MSG.lock() {
-                            *guard = Some((MB_OK | MB_ICONINFORMATION, "成功".to_string(), "設定已套用！所有右鍵選單功能已成功移除。".to_string()));
-                        }
-                        PostMessageW(hwnd_val as HWND, WM_APPLY_DONE, 1, 0); // 1 = uninstall, quit after
-                        return;
-                    }
-
+                if !enable_copy && !enable_cmd && !enable_ps && !enable_rename && !enable_claude {
+                    uninstall_all();
+                    show_message(hwnd, "設定已套用！所有右鍵選單功能已成功移除。", "成功", MB_OK | MB_ICONINFORMATION);
+                    PostQuitMessage(0);
+                } else {
                     match install_and_register(enable_copy, enable_cmd, enable_ps, enable_rename, enable_claude) {
                         Ok(_) => {
                             log_debug("apply_settings: install_and_register Succeeded.");
-                            if let Ok(mut guard) = APPLY_RESULT_MSG.lock() {
-                                *guard = Some((MB_OK | MB_ICONINFORMATION, "成功".to_string(), "設定已套用！右鍵選單功能已成功更新。\n程式已複製到本機 ProgramData 目錄儲存。".to_string()));
-                            }
-                            PostMessageW(hwnd_val as HWND, WM_APPLY_DONE, 0, 0);
+                            show_message(hwnd, "設定已套用！右鍵選單功能已成功更新。\n程式已複製到本機 ProgramData 目錄儲存。", "成功", MB_OK | MB_ICONINFORMATION);
                         }
                         Err(e) => {
                             log_debug(&format!("apply_settings FAILED: {}", e));
-                            if let Ok(mut guard) = APPLY_RESULT_MSG.lock() {
-                                *guard = Some((MB_OK | MB_ICONERROR, "錯誤".to_string(), format!("設定套用失敗：{}", e)));
-                            }
-                            PostMessageW(hwnd_val as HWND, WM_APPLY_DONE, 2, 0);
+                            show_message(hwnd, &format!("設定套用失敗：{}", e), "錯誤", MB_OK | MB_ICONERROR);
                         }
                     }
-                });
-            }
-            0
-        }
-        WM_APPLY_DONE => {
-            // Background apply thread finished — show result on UI thread
-            let result = if let Ok(mut guard) = APPLY_RESULT_MSG.lock() {
-                guard.take()
-            } else {
-                None
-            };
-
-            if let Some((flags, caption, message)) = result {
-                show_message(hwnd, &message, &caption, flags);
-            }
-
-            if wparam == 1 {
-                // Uninstall completed — quit
-                PostQuitMessage(0);
-            } else {
-                // Re-enable apply button
-                let btn_apply = GetDlgItem(hwnd, ID_BTN_APPLY);
-                EnableWindow(btn_apply, 1);
+                }
             }
             0
         }
@@ -1273,11 +1237,8 @@ fn main() {
                 .spawn();
         }
     } else if args.len() >= 2 {
-        // Copy path mode (supports multiple file paths selection)
+        // Copy path mode (simplified to single path copy)
         let path = &args[1];
-        if let Some(paths) = collect_paths(path) {
-            let combined = paths.join("\r\n");
-            copy_to_clipboard(&combined);
-        }
+        copy_to_clipboard(path);
     }
 }
